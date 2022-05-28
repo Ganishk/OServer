@@ -1,1 +1,2 @@
-#!/usr/bin/bash
+#!/bin/sh
+if [ -f $1 ]; then echo "Please pass a valid file";exit;fi
