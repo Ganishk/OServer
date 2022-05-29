@@ -1,8 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
 #trap "echo '\\n'All the users were created successfully." EXIT
+echo `readlink $0`
 
-if [ -n "$1" ] && [ -f "$1" ]; then echo -n ;else echo "Please pass a valid file";exit 155;fi
+#Only consider the first paramater if many are given -- $1
+if [ -n "$1" ] && [ -f "$1" ]; then
+	userAccounts="$1"
+else
+	read -n1 -p "Enter your branch number: " bNo; echo
 
-cat "$1" | while read aNum branch cat1 cat2 cat3; do
-done
+#	Uncomment the below lines to check for branchPassword of Manager
+#	Note: The function is not written for timesake
+#	read -sp "Enter your branch pass: " bPass
+#	checkBranchMgr bNo bPass
+
+	userAccounts=`mktemp -t omegaServer.users.XXXXXX`
+	read -p "Enter the no. of users to add: " nUser
+	for (( i=0; i<nUser; i++ )); do
+		read -n4 -p "Enter last four digits of account number: " accNum ; echo
+		read -p "Enter the citizenship of the account holder: " citizen
+		read -p "Enter the 1st category: " cat1
+		read -p "Enter the 2nd category: " cat2
+		echo "$accNum Branch$bNo $citizen $cat1 $cat2"
+	done
+fi
+
+
+cat  | while read aNum branch cat1 cat2 cat3; do
+	echo
+one
