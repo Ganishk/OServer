@@ -5,5 +5,4 @@
 if [ -n "$1" ] && [ -f "$1" ]; then echo -n ;else echo "Please pass a valid file";exit 155;fi
 
 cat "$1" | while read aNum branch cat1 cat2 cat3; do
-	echo $aNum
 done
