@@ -1,0 +1,52 @@
+#!/bin/bash
+# Eventhough this file is expected to be in it's default permision of 664
+# I added shebang to identify language type and also if has +x permission was given
+# easy to run directly.
+# Since it is called inside a script, I didn't added any file existence verification for this
+# assuming the system won't suddenly stops
+
+function getUInfo {
+## Params:
+# $1 File to store the user data
+
+
+	userAccounts="$1" #Assumed that the file exists
+
+#	Branch No.
+#	read -n1 -p "Give your branch number: " bNo; echo #Assume single digit
+###		AutoScanning
+	read -p "Enter your branch number: " bNo
+#	Uncomment the below lines to check for branchPassword of Manager
+#       Note: The function is not written for timesake
+#       read -sp "Enter your branch pass: " bPass
+#       checkBranchMgr bNo bPass
+	until [ "$nUser" ]; do
+		read -p "Enter the no. of users and press enter: " nUser
+	done
+#	All the data entered are assumed to be correct if not new groups
+#	for them are created. No editing of data is allowed from program.
+	for (( i = 1 ; i<=nUser; i++ ));do
+		echo
+		echo "User number #"$i'___________________________________'
+#	Account Number
+#		read -n4 -p "Enter last four digits of account number: " accNum;echo
+###		AutoScanning
+		read -p "Enter last four digits of account number: " accNum
+#	Citizenship
+		read -p "Enter the citizenship of the user: " citizen
+#	Age
+		read -p "Enter the age reservation for the user: " age
+#	Legacy/Heritage	
+		read -p "Enter the legacy of the user: " legacy
+		if !([ "$accNum" ] && [ "$citizen" ]); then
+			echo "Please enter valid data"
+			i=$[ i - 1 ]
+			continue
+		fi
+		age=`[[ "$age" ]] && echo "$age" || echo "-"`
+		legacy=`[[ "$legacy" ]] && echo "$legacy" || echo "-"`
+		echo "ACC$accNum Branch$bNo $citizen $age $legacy" >> $userAccounts
+	done
+	echo
+	unset nUser
+}

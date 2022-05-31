@@ -7,25 +7,23 @@ echo `readlink $0`
 if [ -n "$1" ] && [ -f "$1" ]; then
 	userAccounts="$1"
 else
-	read -n1 -p "Enter your branch number: " bNo; echo
-
-#	Uncomment the below lines to check for branchPassword of Manager
-#	Note: The function is not written for timesake
-#	read -sp "Enter your branch pass: " bPass
-#	checkBranchMgr bNo bPass
-
 	userAccounts=`mktemp -t omegaServer.users.XXXXXX`
-	read -p "Enter the no. of users to add: " nUser
-	for (( i=0; i<nUser; i++ )); do
-		read -n4 -p "Enter last four digits of account number: " accNum ; echo
-		read -p "Enter the citizenship of the account holder: " citizen
-		read -p "Enter the 1st category: " cat1
-		read -p "Enter the 2nd category: " cat2
-		echo "$accNum Branch$bNo $citizen $cat1 $cat2"
+	echo "Temporary data will be stored in "$userAccounts
+	. getUserInfo #Loads getUInfo function
+
+	while echo;do
+		getUInfo $userAccounts
+
+		while echo; do
+			read -n1 -p "Do you want to add more? [Y/n]: " eoc; echo
+			case $eoc in
+				y|Y) break;;
+				n|N) break 2;;
+			esac
+			done
 	done
 fi
 
-
-cat  | while read aNum branch cat1 cat2 cat3; do
-	echo
-one
+cat  $userAccounts | while read aNum branch citizen age legacy; do
+	echo "$aNum $citizen $age $legacy"
+done
