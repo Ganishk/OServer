@@ -14,3 +14,5 @@ for i in omega{Users,Managers,Ceo} legacy citizen seniorCitizen resident foreign
 done
 
 rm log_files/*
+
+#rm -r /home/OmegaServer

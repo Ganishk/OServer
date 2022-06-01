@@ -2,6 +2,8 @@
 #TODO: Need to trap on successful completion
 #trap "echo '\\n'All the users were created successfully." EXIT
 
+. config
+
 #Only consider the first paramater if many are given -- $1
 if [ -n "$1" ] && [ -f "$1" ]; then
 	userAccounts="$1"
@@ -22,11 +24,6 @@ else
 			done
 	done
 fi
-
-SERVER_DIR=/home/OmegaServer
-MANAGER_FILES=managerHome
-USER_FILES=userHome
-LOGFILE=log_files/info.log
 
 mkdir -p log_files
 echo "" > $LOGFILE # Initialize log file for current run
