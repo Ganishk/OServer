@@ -40,13 +40,13 @@ cat  $userAccounts | while read aNum branch citizen age legacy; do
 #	Create Branch
 	if ! ( id $branch &> /dev/null); then
 ##	Note: Branch Balance and Transaction history are initiated by updateBranch script
-		useradd -g omegaManagers -G omegaUsers -mk $MANAGER_FILES -b $SERVER_DIR $branch
+		useradd -g omegaManagers -G omegaUsers -mk $MANAGER_FILES -b $SERVER_DIR $branch &>/dev/null
 		echo $branch >> log_files/managers.log # Or Branches
 		echo "Created Branch: $branch" | tee -a $LOGFILE # Pipe can be replaced with redirection to supress output to /dev/stdout
 	fi
 #	Create Account
 	if ! ( id $aNum &> /dev/null);then
-		(useradd -g omegaUsers -mk $USER_FILES -b $SERVER_DIR/$branch $aNum || (echo "user $aNum not created" && continue))
+		useradd -g omegaUsers -mk $USER_FILES -b $SERVER_DIR/$branch $aNum &>/dev/null|| (echo "user $aNum not created" && continue)
 		echo $aNum>>log_files/users.log #These files can be used to remove the users and groups
 	else
 		echo "User $aNum already exists" | tee -a $LOGFILE
@@ -69,12 +69,14 @@ cat  $userAccounts | while read aNum branch citizen age legacy; do
 #	Create a group based on legacy OPTIONAL
 	if [ $legacy = "-" ]; then
 		legacy=""
-	elif ! ( getenet group $legacy &> /dev/null ); then
+	elif ! ( getent group $legacy &> /dev/null ); then
 		groupadd $legacy
 		echo $legacy >> log_files/legacy.log
 		echo "Created legacy category: $legacy" | tee -a $LOGFILE
 	fi
 #	Add the user to the respective groups
-	usermod -aG $citizen $age $legacy $aNum
+	for category in $citizen $age $legacy;do
+		usermod -aG "$category" $aNum
+	done
 	echo "Created user: $aNum" | tee -a $LOGFILE
 done
