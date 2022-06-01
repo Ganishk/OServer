@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#sudo bash #To force run the script as superUser
 #trap "echo '\\n'All the users were created successfully." EXIT
 echo `readlink $0`
 
@@ -24,6 +24,49 @@ else
 	done
 fi
 
+SERVER_DIR=/home/OmegaServer
+MANAGER_FILES=managerHome
+USER_FILES=userHome
+
+mkdir log_files
+mkdir -p $SERVER_DIR
+#Create userlevel groups
+for x in Users Managers Ceo;do
+	echo "groupadd omega"$x
+done
+
 cat  $userAccounts | while read aNum branch citizen age legacy; do
-	echo "$aNum $citizen $age $legacy"
+#	Create Branch
+	if ! ( id $branch &> /dev/null); then
+		echo "useradd -g omegaManagers -G omegaUsers -mk $MANAGER_FILES -b $SERVER_DIR $branch"
+		echo $branch >> log_files/managers.log # Or Branches
+	fi
+#	Create Account
+	if ! ( id $aNum &> /dev/null);then
+		echo "useradd -g omegaUsers -mk $USER_FILES -b $SERVER_DIR/$branch $aNum"
+		echo $aNum>>log_files/users.log
+	else
+		echo "User $aNum already exists"
+	fi
+#	Create a group based on citizenship
+	if ! ( id $citizen &> /dev/null); then #Assuming the citizenship as the required category
+		echo "groupadd $citizen"
+		echo $citizen >> log_files/citizenship.log
+	fi
+#	Create a group based on age reservation
+	if [ $age = "-" ]; then
+		age=""
+	elif ! ( id $age &> /dev/null ); then
+		echo "groupadd $age"
+		echo $age >> log_files/age_reservation.log
+	fi
+#	Create a group based on legacy
+	if [ $legacy = "-" ]; then
+		legacy=""
+	elif ! ( id $legacy &> /dev/null ); then
+		echo "groupadd $legacy"
+		echo $legacy >> log_files/legacy.log
+	fi
+#	Add the user to the respective groups
+	echo "usermod -aG $citizen $age $legacy"
 done
