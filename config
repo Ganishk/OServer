@@ -1,0 +1,5 @@
+# To reduce hardcoding constants are defined here
+SERVER_DIR=/home/OmegaServer
+MANAGER_FILES=managerHome
+USER_FILES=userHome
+LOGFILE=log_files/info.log
