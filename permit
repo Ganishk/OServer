@@ -1,1 +1,5 @@
 #!/bin/bash
+
+. config
+#The Ceo group was already created in genUser file
+useradd -g omegaCeo -mk /dev/null -d SERVER_DIR CEO
