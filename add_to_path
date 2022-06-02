@@ -3,7 +3,7 @@
 # Current working directory
 CWD=`cd $(dirname $0) && pwd`
 
-echo "export PATH=$CWD:$PATH" >> $HOME/.bashrc
+echo "export PATH=$CWD:\$PATH" >> $HOME/.bashrc
 
 #Give executable permissions if it doesn't have it
 for x in genUser permit updateBranch allotInterest makeTransaction genSummary
