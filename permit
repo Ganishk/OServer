@@ -15,7 +15,7 @@ chmod 2770 $SERVER_DIR
 for branchManager in $SERVER_DIR/Branch*;do
 	chown :omegaCeo $branchManager
 	chmod 770 $branchManager
-	for userAccount in $branchManager/ACC*; do
+	for userAccount in $branchManager/ACC????; do
 		chown :omegaManagers $userAccount -R
 		chmod 460 $userAccount -R
 		chmod 570 $userAccount # For letting the users accessing their own directories
