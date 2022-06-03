@@ -8,7 +8,7 @@ for ((i=10;i<=50;i++));do
 done
 
 for i in 1 2 3 4; do userdel Branch$i;done
-
+userdel ceo
 for i in omega{Users,Managers,Ceo} legacy citizen seniorCitizen resident foreigner minor;do
 	groupdel $i
 done
