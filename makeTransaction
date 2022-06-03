@@ -1,1 +1,38 @@
 #!/bin/bash
+
+source config
+
+read -p "Enter the last four digits of your Account number: " accNo
+accNo=ACC`printf %04d $accNo`
+ACC_DIR=$(getent passwd $accNo | cut -d: -f6)
+if [ -z $ACC_DIR ] || ! [ -d $ACC_DIR ] #The user must have permissions to read the directory
+# Hence runt the script as superUser
+then
+	echo "The user doesn't have an account in our bank"
+	exit -2	#254
+fi
+
+# read -sp "Enter your PIN: " PIN
+balanceFile=$ACC_DIR/Current_Balance.txt
+Acc_Balance=`cat $balanceFile`
+read -n1 -p "Credit(C) or Debit(D): " transaction ; echo
+read -p "Enter amount: " amount
+DATE=`date +"%F %H:%M:%S"`
+case $transaction in
+ c | C)
+	Acc_Balance=$[ Acc_Balance + amount ]
+	transSymbol="+"
+;;
+ d | D)
+	if [ $Acc_Balance -lt $amount ]
+	then
+		echo "Balance not sufficient"
+# Here I used Rs. (instead we can use money symbol from locale settings)
+		echo Available balance is Rs. $Acc_Balance
+		exit 200
+	fi
+	Acc_Balance=$[ Acc_Balance - amount ]
+	transSymbol="-"
+;;
+esac
+echo $transSymbol$Acc_Balance
