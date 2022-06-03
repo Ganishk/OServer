@@ -5,25 +5,26 @@ source config
 read -p "Enter the last four digits of your Account number: " accNo
 accNo=ACC`printf %04d $accNo`
 ACC_DIR=$(getent passwd $accNo | cut -d: -f6)
+balanceFile=$ACC_DIR/Current_Balance.txt
+Acc_Balance=`cat $balanceFile`
+
 if [ -z $ACC_DIR ] || ! [ -d $ACC_DIR ] #The user must have permissions to read the directory
-# Hence runt the script as superUser
+# Hence run the script as superUser
 then
 	echo "The user doesn't have an account in our bank"
 	exit -2	#254
 fi
 
 # read -sp "Enter your PIN: " PIN
-balanceFile=$ACC_DIR/Current_Balance.txt
-Acc_Balance=`cat $balanceFile`
 read -n1 -p "Credit(C) or Debit(D): " transaction ; echo
-read -p "Enter amount: " amount
-DATE=`date +"%F %H:%M:%S"`
 case $transaction in
  c | C)
+	read -p "Enter amount: " amount
 	Acc_Balance=$[ Acc_Balance + amount ]
 	transSymbol="+"
 ;;
  d | D)
+	read -p "Enter amount: " amount # To check D or C. I hardcoded twice
 	if [ $Acc_Balance -lt $amount ]
 	then
 		echo "Balance not sufficient"
@@ -33,6 +34,15 @@ case $transaction in
 	fi
 	Acc_Balance=$[ Acc_Balance - amount ]
 	transSymbol="-"
-;;
+;;*) echo "Invalid Transaction"; exit 100;;
 esac
-echo $transSymbol$Acc_Balance
+
+
+
+DATE=`date +"%F %H:%M:%S"` # Note the time only if the transaction is successful. Hence, added at last
+echo $Acc_Balance > $balanceFile
+echo $accNo $transSymbol$amount $DATE >> $ACC_DIR/Transaction_History.txt
+echo Transaction Successful
+echo Available Balance: Rs. $Acc_Balance
+#Model Transaction log
+#ACC00022 +7636 2022-03-06 22:26:34
