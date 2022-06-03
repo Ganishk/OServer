@@ -15,7 +15,7 @@ branchBalance=0
 for userAcc in $BRANCH_DIR/ACC????; do
 	branchBalance=$[ branchBalance + `cat $userAcc/Current_Balance.txt` ]
 #TODO: Need to sort transactions based on date
-	echo $userAcc/Transaction_History.txt >> $BRANCH_DIR/Branc_Transaction_History.txt
+	cat $userAcc/Transaction_History.txt >> $BRANCH_DIR/Branch_Transaction_History.txt
 done
 
 echo $branchBalance > $BRANCH_DIR/Branch_Current_Balance.txt
