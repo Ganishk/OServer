@@ -1,1 +1,21 @@
 #!/bin/bash
+
+. config
+
+# In Debian systems cron.daily folder exists
+SCRIPT=$SERVER_DIR/allotInterest
+if [ -d /etc/cron.daily ]; then
+	sudo echo "@daily ceo $SCRIPT" > /etc/cron.daily/omegaServer
+	sudo echo ""> etc/cron.daily/omegaServer
+else
+	sudo echo "@daily $SCRIPT" > /var/spool/cron/crontabs/omegaServer
+fi
+
+cp omegaServer.cron $SCRIPT
+chmod 710 $SCRIPT
+chown ceo:omegaManagers $SCRIPT
+
+#Only for test user
+cp ../Daily_Interest_Rates.txt $SERVER_DIR/Interest.txt
+chown ceo:omegaCeo $SERVER_DIR/Interest.txt
+chmod 644 $SERVER_DIR/Interest.txt
