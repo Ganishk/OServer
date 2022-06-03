@@ -2,4 +2,30 @@
 
 . config
 #The Ceo group was already created in genUser file
-useradd -g omegaCeo -mk /dev/null -d SERVER_DIR CEO
+if ! ( id ceo &> /dev/null || (useradd -g omegaCeo -G omegaManagers,omegaUsers -mk /dev/null -d $SERVER_DIR ceo 2>/dev/null && echo "CEO Account was created for the server") ) ; then
+	echo "CEO Account not created due to error"
+	exit
+fi	
+# Access control list commands are add-on not available as default in ubuntu server 14.04.6
+# hence, I didn't used setfacl command for setting group permissions
+
+chown ceo:omegaCeo $SERVER_DIR
+chmod 2770 $SERVER_DIR
+
+for branchManager in $SERVER_DIR/Branch*;do
+	chown :omegaCeo $branchManager
+	chmod 770 $branchManager
+	for userAccount in $branchManager/ACC*; do
+		chown :omegaManagers $userAccount -R
+		chmod 460 $userAccount -R
+		chmod 570 $userAccount # For letting the users accessing their own directories
+# Since the Branch directory is protected to be accessed by only the branch manager, Ceo and ofcourse root --> No other manager could
+# access the accounts in the branch directory hence branch manager group won't allow strangers
+	done
+
+	for branchInfo in $branchManager/{*.txt,.bash*}; do
+		chmod 660 $branchInfo
+	done
+done
+
+# omegaUsers --> Default group of account holders can be used in future
