@@ -1,11 +1,14 @@
 #!/bin/bash
 
 . config
-
-#read -p "Enter your branch number: " bNo
-#BRANCH_DIR=$SERVER_DIR/Branch$bNo
-#unset bNo
-BRANCH_DIR=$SERVER_DIR/`whoami`
+if [ `whoami` = root ]; then
+#Allow root to perform actions for anyone
+	read -p "Enter your branch number: " bNo
+	BRANCH_DIR=$SERVER_DIR/Branch$bNo
+	unset bNo
+else
+	BRANCH_DIR=$SERVER_DIR/`whoami`
+fi
 
 if ! [ -d $BRANCH_DIR ]; then
 	echo "Branch not exists"

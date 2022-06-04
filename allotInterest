@@ -18,6 +18,6 @@ chmod 710 $SCRIPT
 chown ceo:omegaManagers $SCRIPT
 
 #Only for test user
-cp ../Daily_Interest_Rates.txt $SERVER_DIR/Interest.txt
+cp sample/Daily_Interest_Rates.txt $SERVER_DIR/Interest.txt
 chown ceo:omegaCeo $SERVER_DIR/Interest.txt
 chmod 644 $SERVER_DIR/Interest.txt
