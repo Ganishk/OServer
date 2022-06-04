@@ -2,26 +2,29 @@
 
 INTEREST_DATA=./Interest.txt
 #Expected to be run as ceo Sometimes by manager at risky times
+export rate=0
 for branch in ./Branch*;do
 	for account in $branch/ACC????;do
 		aNo=`stat -c %U $account`	
 		touch $account/InterestAmount.txt
-		rate=0
 		cat $INTEREST_DATA | while read category percent; do
-			if groups $aNo | grep -q '\b$category\b';then
-				rate=$(echo "scale=3; $rate + $percent" | bc)
+			if groups $aNo | grep -q $category;then
+				rate=`echo $rate+${percent::5}`
+#				rate=`echo "scale=3;$rate" | bc -l`
+				rate=`bc -l <<< "scale=3;$rate"`
+# Due to windows CRLF ending characters use {::-2} and {::-1} for unix like systems
 			fi
 		done
 		amount=`cat $account/InterestAmount.txt`
-		if [ -z $amount ]; then amount=0 ;fi
-		amount=$(echo "scale=2; $amount*(1+$rate) | bc")
+		if [ -z "$amount" ]; then amount=0 ;fi
+		balance=`cat $account/Current_Balance.txt`
+		amount=$(echo "scale=5; ($balance*$rate/100)+$amount" | bc -l )
 		echo $amount > $account/InterestAmount.txt
-		AnnualYear=$( (date -d `date %Y-02-29` &>/dev/null && echo 92) ||echo 91 )
+		AnnualYear=$( (date -d `date +%Y-02-29` &>/dev/null && echo 92) ||echo 91 )
 # Adding interest amount annualy to avoid compound interest, and it'll be added after calculating the interest on 1st April
 		if [ $AnnualYear -eq `date +%j` ]; then
 			RoundAmount=$( echo "scale=0;$amount/1" | bc -l )
 # TODO: Optimize by Streamline editor
-			balance=`cat $account/Current_Balance.txt`
 			balance=$[ balance + RoundAmount ]
 			echo $balance > $account/Current_Balance.txt
 		fi
