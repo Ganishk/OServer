@@ -1,1 +1,16 @@
 #!/bin/bash
+#Expected to be run as a manager
+. config
+if [ -n "$1" ] && [ -f "$1" ]; then
+	transFile="$1"
+elif [ `whoami` = root ] || [ `whoami` = ceo ] ; then
+	read -p "Enter the branch no.: " transFile
+	transFile=$SERVER_DIR/Branch$transFile/Branch_Transaction_History.txt
+elif [[ `whoami` = Branch* ]]; then
+	transFile=$HOME/Branch_Transaction_History.txt
+else
+	echo "Invalid permissions"
+	exit -5
+fi
+
+echo $transFile
