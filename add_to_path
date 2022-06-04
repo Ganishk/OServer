@@ -2,11 +2,22 @@
 
 # Current working directory
 CWD=`cd $(dirname $0) && pwd`
+if ! echo $PATH|grep -q "$CWD" ; then
+	for loadFile in .bashrc .profile #.bash_profile
+	do
+		echo "export PATH=$CWD:\$PATH" >> $HOME/$loadFile
+# To ensure that the file is found in both interactive and non interactive shell
+# Some systems may use .bash_profile instead of .profile
 
-echo "export PATH=$CWD:\$PATH" >> $HOME/.bashrc
+#	echo "alias sudo='sudo env \$PATH'" >> $HOME/.bashrc
+		echo "alias sudo='sudo -E'" >> $HOME/$loadFile
+		. $HOME/$loadFile
+	done
+fi
 
 #Give executable permissions if it doesn't have it
 for x in genUser permit updateBranch allotInterest makeTransaction genSummary
 do
 	chmod +x $CWD/$x
+#	echo 'alias `echo $x`="sudo env PATH=$PATH $x"' >> $HOME/.bashrc
 done
