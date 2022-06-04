@@ -4,12 +4,14 @@
 
 # In Debian systems cron.daily folder exists
 SCRIPT=$SERVER_DIR/allotInterest
-if [ -d /etc/cron.daily ]; then
-	sudo echo "@daily ceo $SCRIPT" > /etc/cron.daily/omegaServer
-	sudo echo ""> etc/cron.daily/omegaServer
-else
-	sudo echo "@daily $SCRIPT" > /var/spool/cron/crontabs/omegaServer
-fi
+#Expected to be run as CEO
+echo "@daily $SCRIPT" | crontab -
+#if [ -d /etc/cron.daily ]; then
+#	sudo echo "@daily ceo $SCRIPT" > /etc/cron.daily/omegaServer
+#	sudo echo ""> etc/cron.daily/omegaServer
+#else
+#	sudo echo "@daily $SCRIPT" > /var/spool/cron/crontabs/omegaServer
+#fi
 
 cp omegaServer.cron $SCRIPT
 chmod 710 $SCRIPT
